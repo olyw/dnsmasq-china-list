@@ -1,0 +1,26 @@
+name: Update DNSmasq China List
+
+on:
+  schedule:
+    - cron: "0 20 * * 0"
+  workflow_dispatch:
+
+jobs:
+  update-list:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Update China List
+        run: |
+          wget -O domains.china.conf https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf
+          sed -i 's/114.114.114.114/223.5.5.5/g' domains.china.conf
+          
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update DNSMasq China List
